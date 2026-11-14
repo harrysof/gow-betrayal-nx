@@ -191,7 +191,7 @@ class Engine {
   // Frame driver / lifecycle.
   bool ok_ = false, supportedBuild_ = false;
   bool started_ = false, resetFrameTiming_ = true, clearBorders = true, sleeping_ = false;
-  double lastFrameStart_ = 0, lifecycleTime_ = 0, lastTick_ = 0, nextFrame_ = 0;
+  double lastFrameStart_ = 0, lifecycleTime_ = 0, lastTick_ = 0, nextFrame_ = 0, lastNowMs_ = 0;
   int lastFpsMode_ = 0;
   int runInterpolated(double nowMs, Surface& screen, int fps);
   int pendingLifecycle_ = -1, lifecycleState_ = 2;

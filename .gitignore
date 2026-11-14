@@ -5,6 +5,8 @@
 /roms/*.jar
 /roms/*.jad
 /betrayal/extracted/
+/game.jar
+/Game/
 
 # --- Third-party tooling ---
 # Not project source; fetched locally, not tracked in git.
@@ -21,6 +23,12 @@ __pycache__/
 /betrayal/port/dist/
 /build_src/
 *.log
+
+# --- Switch port build output (regenerable via port/switch/build.bat) ---
+/betrayal/port/switch/build/
+/betrayal/port/switch/*.nro
+/betrayal/port/switch/*.elf
+/betrayal/port/switch/*.nacp
 
 # --- Port runtime output ---
 crash.txt

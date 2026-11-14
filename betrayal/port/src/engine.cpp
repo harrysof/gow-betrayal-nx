@@ -1,14 +1,19 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "engine.h"
 
+#if defined(_WIN32)
 #include <windows.h>
 #include <shellapi.h>
 #include <dbghelp.h>
+#else
+#include <sys/stat.h>
+#endif
 
 #include <algorithm>
 #include <climits>
 #include <cstdio>
 #include <cstring>
+#include <stdexcept>
 
 #define STBI_NO_STDIO
 #include "stb_image.h"
@@ -56,11 +61,18 @@ void logJavaException(const char* where, const JavaException& e) {
   static std::string seen;
   std::string sig;
   for (int i = 0; i < e.nframes && i < 4; i++) sig += std::to_string((uintptr_t)e.frames[i]) + ",";
+  if (sig.empty()) sig = where;  // no frame walker (Switch): one report per phase
   if (seen.find(sig) != std::string::npos || seen.size() > 4000) return;
   seen += sig + ";";
+#if defined(_WIN32)
   FILE* f = std::fopen("exceptions.log", "a");
+#else
+  const std::string logPath = Platform::saveDir + "/exceptions.log";
+  FILE* f = std::fopen(logPath.c_str(), "a");
+#endif
   if (!f) return;
   std::fprintf(f, "%s: %s\n", where, e.what);
+#if defined(_WIN32)
   HANDLE proc = GetCurrentProcess();
   static bool symInit = false;
   if (!symInit) {
@@ -80,6 +92,9 @@ void logJavaException(const char* where, const JavaException& e) {
     bool hasLine = SymGetLineFromAddr64(proc, (DWORD64)e.frames[i], &lineDisp, &line) != 0;
     std::fprintf(f, "   %s  %s:%lu\n", sym->Name, hasLine ? line.FileName : "?", hasLine ? line.LineNumber : 0);
   }
+#else
+  for (int i = 0; i < e.nframes; i++) std::fprintf(f, "   %p\n", e.frames[i]);
+#endif
   std::fclose(f);
 }
 
@@ -113,7 +128,11 @@ Engine::Engine(MIDlet* m) : midlet(m) {
   // parallax background); the generic v1.4.8 build has one there, 16 px tiles and different code.
   std::vector<uint8_t> rp19;
   supportedBuild_ = readFile(Platform::dataDir + "/RP19", rp19) && rp19.size() >= 3 && (rp19[1] << 8 | rp19[2]) == 2;
+#if defined(_WIN32)
   CreateDirectoryA(Platform::saveDir.c_str(), nullptr);
+#else
+  mkdir(Platform::saveDir.c_str(), 0777);
+#endif
   setViewSize(240, 320);
 }
 
@@ -143,7 +162,9 @@ void Engine::postLifecycle(int s) {
   } else if (started_ && (s == 1 || s == 2)) {
     if (soundPlayer) soundPlayer->stop();
     pendingLifecycle_ = s;
-    lifecycleTime_ = (double)GetTickCount64();
+    // The game loop's monotonic clock (runFrame's nowMs); GetTickCount64 is not portable and would
+    // also be a different epoch from the Switch clock.
+    lifecycleTime_ = lastNowMs_;
   }
 }
 
@@ -156,8 +177,12 @@ bool Engine::openUrl(const String& url) {
   if (url.isNull()) return false;
   std::string u = url.toUtf8();
   if (u.rfind("http://", 0) != 0 && u.rfind("https://", 0) != 0) return false;
+#if defined(_WIN32)
   ShellExecuteA(nullptr, "open", u.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
   return true;
+#else
+  return false;  // no browser hand-off on the console; the shipped jar does not use this path
+#endif
 }
 
 // Engine.processLifecycle, made non-blocking: returns true while the game must not run.
@@ -187,6 +212,7 @@ void Engine::resetFrameTimer() {
 
 // One pass of Engine.run's loop body.
 int Engine::runFrame(double nowMs, Surface& screen) {
+  lastNowMs_ = nowMs;
   if (!started_) {
     started_ = true;
     onLifecycle(0);

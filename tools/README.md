@@ -66,6 +66,9 @@ tracked elsewhere, so only the scripts are tracked.
   (`betrayal/port/src/launcher/assets/banner_source.png`, currently a generated
   placeholder) into the launcher's `banner.png` and `gow.ico`. Use
   PowerShell's System.Drawing, so no extra dependencies.
+- **`make_switch_icon.py`** -- makes the Switch homebrew icon
+  (`betrayal/port/switch/icon.jpg`, 256x256 JPEG) from the same source image.
+  Needs Pillow.
 
 ## Why Vineflower and not Ghidra
 

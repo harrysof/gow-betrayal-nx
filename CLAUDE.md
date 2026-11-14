@@ -26,6 +26,7 @@ python tools/rename_gow.py
 betrayal\port\build.bat                # Debug port (needs VS Build Tools)
 betrayal\port\build_dist.bat 0.0.0-x   # shipping build -> betrayal\port\dist
 powershell betrayal\port\check_dist.ps1
+betrayal\port\switch\build.bat         # Switch .nro (needs devkitPro switch-dev)
 ```
 
 `java` on `PATH` is 1.8; the scripts find a JDK 17+ themselves

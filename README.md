@@ -83,6 +83,7 @@ level, better art and all eleven MIDI tracks in use.
 | `betrayal/src/` | Renamed, compile-checked Java (generated from `names.map`) |
 | `betrayal/docs/` | Roadmaps, class map, asset formats and `names.map` |
 | `betrayal/port/` | The C++ port, launcher and packaging scripts |
+| `betrayal/port/switch/` | Nintendo Switch homebrew (`.nro`) build and libnx backend |
 | `tools/` | Extraction, decompilation, renaming, parsing and translation scripts |
 | `roms/`, `betrayal/extracted/` | Your original jar and its contents (gitignored, never commit) |
 
@@ -95,6 +96,7 @@ level, better art and all eleven MIDI tracks in use.
 | Classes and members | [CLASS_MAP](betrayal/docs/CLASS_MAP.md) |
 | Binary formats | [ASSET_FORMATS](betrayal/docs/ASSET_FORMATS.md) |
 | Store page copy | [ITCH_PAGE](betrayal/docs/ITCH_PAGE.md) |
+| Switch port | [switch/README](betrayal/port/switch/README.md) |
 
 The scripts are described in [tools/README.md](tools/README.md).
 
@@ -116,6 +118,26 @@ To build the same package that gets released, run
 `betrayal\port\build_dist.bat <version>` and then
 `betrayal\port\check_dist.ps1`, which confirms that no game data or VC runtime
 slipped in. The output is in `betrayal\port\dist\`.
+
+### Nintendo Switch
+
+Switch port by **Harrysof**.
+
+The same translated game also builds as a homebrew `.nro` with devkitA64 and
+libnx. The Win32 shell is replaced by a libnx framebuffer, Switch pad mapping
+and a small software MIDI/WAV mixer; the game, renderer and resource loaders are
+shared with the PC port.
+
+```
+betrayal\port\switch\build.bat        & rem -> gow_switch.nro
+```
+
+Install it as `sdmc:/switch/gow-betrayal/gow_switch.nro` and put your own K800i
+`game.jar` beside it; the first run extracts the `RP*` banks to `data/`. The
+`.nro` contains no game data. The K800i build is required, exactly as on PC;
+other releases are rejected. See
+[betrayal/port/switch/README.md](betrayal/port/switch/README.md) for controls,
+settings and troubleshooting.
 
 ## Releases and self-update
 

@@ -22,14 +22,16 @@ supply yourself.
 The launcher's background and icon are the game's promo art, supplied by the
 project owner (`betrayal/port/src/launcher/assets/banner_source.png`; the
 `banner.png` and `gow.ico` files are generated from it by
-`tools/make_banner.py` / `tools/make_icon.py`). `.github/social-preview.jpg`
-is made from the same image. The "God of War" wordmark and Kratos in it
-belong to their owners.
+`tools/make_banner.py` / `tools/make_icon.py`, and the Switch homebrew icon
+`betrayal/port/switch/icon.jpg` by `tools/make_switch_icon.py`).
+`.github/social-preview.jpg` is made from the same image. The "God of War"
+wordmark and Kratos in it belong to their owners.
 
 | Component | Licence | Where |
 |---|---|---|
 | `stb_image` | public domain / MIT | `betrayal/port/third_party/stb/` |
 | `puff` (zlib's reference inflate) | zlib | `betrayal/port/third_party/puff/` |
+| `libnx` (Switch build only) | zlib | build-time dependency, not vendored |
 | `javalang` (dev tool only, not shipped) | MIT | used by `tools/java2cpp.py` |
 | Vineflower (dev tool only, not shipped) | Apache-2.0 | `tools/vineflower.jar` |
 

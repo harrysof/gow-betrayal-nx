@@ -80,7 +80,8 @@ struct ByteArrayInputStream {
   explicit ByteArrayInputStream(const Arr<int8_t>& d) : data(d) {}
 };
 
-struct MidiSequence;  // platform.cpp: a parsed MIDI file
+struct MidiSequence;  // platform.cpp / platform_switch.cpp: a parsed MIDI file
+struct WavClip;       // platform_switch.cpp: decoded PCM for the Switch mixer
 
 // javax.microedition.media.Player. MIDI is parsed once (prefetch) and played by a sequencer thread through the
 // Windows MIDI mapper (midiOut); wav goes through PlaySound. One MIDI plays at a time, as SoundPlayer expects.
@@ -103,6 +104,7 @@ class Player {
   int loops_ = 1, state_ = 300;
   int64_t endTime_ = 0;  // wav: when a one-shot finishes; 0 = never (looping)
   std::shared_ptr<MidiSequence> seq_;
+  std::shared_ptr<WavClip> wav_;  // Switch backend; unused on Windows
 };
 
 // com.nokia.mid.sound.Sound stand-in. SoundPlayer uses it only for resource type 7 (Nokia ringing tones),
